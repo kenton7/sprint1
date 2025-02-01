@@ -12,7 +12,7 @@ public class AutoAccountant {
         Scanner scanner = new Scanner(System.in);
         ReportReader reportReader = new ReportReader();
         List<MonthlyReport> monthlyReports = new ArrayList<>();
-        YearlyReport yearlyReport = null;
+        ReportY yearlyReport = null;
         boolean isStared = true;
         int currentYear = Year.now().getValue();
 
@@ -30,7 +30,6 @@ public class AutoAccountant {
             int year = scanner.nextInt();
             if (year > currentYear) {
                 System.out.println("Год не может быть больше текущего");
-                isStared = false;
             }
 
             switch (userInput) {
@@ -46,6 +45,7 @@ public class AutoAccountant {
                 }
                 case 2 -> {
                     System.out.println("Загрузка годового отчёта...");
+                    yearlyReport = reportReader.yearlyReport(year);
                     isStared = false;
                     break;
                 }
@@ -76,7 +76,6 @@ public class AutoAccountant {
                 }
             }
         }
-
     }
 }
 

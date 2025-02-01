@@ -1,5 +1,3 @@
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,64 +12,47 @@ public class YearlyReport {
     int currentYear = Year.now().getValue();
     private List<ReportY> reports;
 
-    public YearlyReport(List<ReportY> reports) {
-        this.reports = reports;
-    }
+//    public YearlyReport(List<ReportY> reports) {
+//        this.reports = reports;
+//    }
 
     public static void main(String[] args) {
     }
 
-    public static YearlyReport fromCSV(String fileName) {
-        String[] lines = fileName.split(";");
-        List<ReportY> reports = new ArrayList<>();
+    public static ReportY fromCSV(String fileName) {
+        String[] lines = fileName.split("\\R");
+        ReportY report = new ReportY();
+        double sumForRashod = 0;
+        int counterForRashod = 0;
+        double sumForDohod = 0;
+        int counterForDohod = 0;
 
         for (int i = 1; i < lines.length; i++) {
-            String[] filelds = lines[i].split(";");
-            String month = filelds[0];
-            int amount = Integer.parseInt(filelds[1]);
-            boolean isExpense = Boolean.parseBoolean(filelds[2]);
-            reports.add(new ReportY(month, amount, isExpense));
-        }
-        return new YearlyReport(reports);
-    }
+            String[] currentFields = lines[i].split(";");
+            int currentAmount = Integer.parseInt(currentFields[1]);
+            String currentMonth = currentFields[0];
 
-    void getYearlyReport() {
-        scanner = new Scanner(System.in);
-        System.out.println("Выберите следующее действие:");
-        System.out.println("1. Ввести год, за который нужно получить отчёт.");
-        System.out.println("0. Вернуться назад.");
-        int userInput = scanner.nextInt();
-
-        if (userInput == 1) {
-            System.out.println("Введите год:");
-            int year = scanner.nextInt();
-            if (year > currentYear) {
-                System.out.println("Год не может быть больше текущего.");
-            } else {
-                fileContents = readFileContentsOrNull("/Users/ilya/Documents/y." + year + ".csv");
-            }
-            if (fileContents != null) {
-                String[] lines = fileContents.split("\\n");
-                for (int line = 1; line < lines.length; line++) {
-                    String[] lineContents = lines[line].trim().split(";");
-                    parsedLines.add(lineContents);
-
+            if (i < lines.length - 1) {
+                String[] nextFields = lines[i + 1].split(";");
+                if (currentFields[0].equals(nextFields[0])) {
+                    int nextAmount = Integer.parseInt(nextFields[1]);
+                    int difference = currentAmount - nextAmount;
+                    System.out.println("Разница между текущим и следующим значением: " + difference);
                 }
             }
-        } else {
-            AutoAccountant autoAccountant = new AutoAccountant();
-            autoAccountant.main(null);
-        }
-    }
 
-    String readFileContentsOrNull(String filePath) {
-        try {
-            return Files.readString(Path.of(filePath));
-        } catch (Exception e) {
-            System.out.println("Невозможно прочитать файл с месячным отчётом.");
-            System.out.println("Возможно, указано не верное имя файла или его расширение не .csv");
-            System.out.println("Или файл с отчётом за данный месяц не найден.");
-            return null;
+            if (currentFields[2].equals("true")) {
+                counterForRashod++;
+                sumForRashod += currentAmount;
+            } else {
+                counterForDohod++;
+                sumForDohod += currentAmount;
+            }
         }
+        double averageRashod = sumForRashod / counterForRashod;
+        double averageDohod = sumForDohod / counterForDohod;
+        System.out.println("Средний расход за все месяцы в году: " + averageRashod);
+        System.out.println("Средний доход за все месяцы в году: " + averageDohod);
+        return report;
     }
 }

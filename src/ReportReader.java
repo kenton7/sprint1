@@ -41,14 +41,18 @@ public class ReportReader {
         return monthlyReports;
     }
 
-    public YearlyReport yearlyReport(int year) {
+    public ReportY yearlyReport(int year) {
         String fileName = "y." + year + ".csv";
+        ReportY yearlyReport = new ReportY();
         try {
             String fileContents = Files.readString(Path.of("/Users/ilya/Documents/" + fileName));
-            return YearlyReport.fromCSV(fileContents);
+            System.out.println("Отчёт за " + year + " год:");
+            yearlyReport = YearlyReport.fromCSV(fileContents);
+            System.out.println("Файл успешно прочитан: " + fileName);
         } catch (Exception e) {
             System.out.println("Ошибка чтения годового отчёта: " + fileName);
             return null;
         }
+        return yearlyReport;
     }
 }
